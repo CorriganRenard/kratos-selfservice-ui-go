@@ -1,6 +1,6 @@
 {{define "content"}}
 
-  <!--
+<!--
   This example requires some changes to your config:
   
   ```
@@ -24,18 +24,19 @@
 -->
 <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
   <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <img class="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company">
+    <img class="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+      alt="Your Company">
     <h2 class="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Create your account</h2>
   </div>
 
   <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
     <div class="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-      
+
 
       {{ if .Messages }}
-     
-        {{ range .Messages }}
-        <div class="messages">
+
+      {{ range .Messages }}
+      <div class="messages">
         {{ if eq .Type "info"}}
         <p class="">{{ .Text }}</p>
         {{ end }}
@@ -46,57 +47,52 @@
         <p class="text-green-500">{{ .Text }}</p>
         {{ end }}
       </div>
-        {{ end }}
-      
       {{ end }}
-      
 
-      <form class="space-y-6"  method="{{ .Method}}" action="{{ .Action }}">
+      {{ end }}
+
+
+      <form class="space-y-6" method="{{ .Method}}" action="{{ .Action }}">
         <!-- Render Fields Dynamically -->
         {{ range .Fields }}
-          {{ if .Attributes.GetActualInstance }}
-            <div>
-                <!-- Show label unless field is hidden or a submit button -->
-                {{ if not (or (eq .Attributes.GetActualInstance.Type "hidden") (eq .Attributes.GetActualInstance.Type "submit")) }}
-                <label for="{{ .Attributes.GetActualInstance.Name }}" class="block text-sm font-medium leading-6 text-gray-900">
-                {{ .Meta.Label.Text }}
-                </label>
-                {{ end }}
-                
-    
-                {{ if eq .Attributes.GetActualInstance.Type "submit" }}
-                 <!-- Input Field -->
-                 <button 
-                 type="{{ .Attributes.GetActualInstance.Type }}" 
-                 name="{{ .Attributes.GetActualInstance.Name }}"  
-                 id="{{ .Attributes.GetActualInstance.Name }}"
-                 value="{{ .Attributes.GetActualInstance.Value }}"
-                 {{ if .Attributes.GetActualInstance.Pattern }} pattern="{{ .Attributes.GetActualInstance.Pattern }}" {{ end }}
-                 {{ if .Attributes.GetActualInstance.Required }} required {{ end }}
-                 {{ if .Attributes.GetActualInstance.Disabled }} disabled {{ end }}
-                 class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                 >  {{.Meta.Label.Text}} </button>
-    
-                {{ else }}
-                <!-- Input Field -->
-                <input 
-                type="{{ .Attributes.GetActualInstance.Type }}" 
-                name="{{ .Attributes.GetActualInstance.Name }}"  
-                id="{{ .Attributes.GetActualInstance.Name }}"
-                value="{{ .Attributes.GetActualInstance.Value }}"
-                {{ if .Attributes.GetActualInstance.Pattern }} pattern="{{ .Attributes.GetActualInstance.Pattern }}" {{ end }}
-                {{ if .Attributes.GetActualInstance.Required }} required {{ end }}
-                {{ if .Attributes.GetActualInstance.Disabled }} disabled {{ end }}
-                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                >
-                {{ end }}
-            </div>
+        {{ if .Attributes.GetActualInstance }}
+        <div>
+          <!-- Show label unless field is hidden or a submit button -->
+          {{ if not (or (eq .Attributes.GetActualInstance.Type "hidden") (eq .Attributes.GetActualInstance.Type
+          "submit")) }}
+          <label for="{{ .Attributes.GetActualInstance.Name }}"
+            class="block text-sm font-medium leading-6 text-gray-900">
+            {{ .Meta.Label.Text }}
+          </label>
           {{ end }}
-        
-          {{ if .Messages }}
-     
-          {{ range .Messages }}
-          <div class="messages">
+
+
+          {{ if eq .Attributes.GetActualInstance.Type "submit" }}
+          <!-- Input Field -->
+          <button type="{{ .Attributes.GetActualInstance.Type }}" name="{{ .Attributes.GetActualInstance.Name }}"
+            id="{{ .Attributes.GetActualInstance.Name }}" value="{{ .Attributes.GetActualInstance.Value }}" {{ if
+            .Attributes.GetActualInstance.Pattern }} pattern="{{ .Attributes.GetActualInstance.Pattern }}" {{ end }} {{
+            if .Attributes.GetActualInstance.Required }} required {{ end }} {{ if .Attributes.GetActualInstance.Disabled
+            }} disabled {{ end }}
+            class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            {{.Meta.Label.Text}} </button>
+
+          {{ else }}
+          <!-- Input Field -->
+          <input type="{{ .Attributes.GetActualInstance.Type }}" name="{{ .Attributes.GetActualInstance.Name }}"
+            id="{{ .Attributes.GetActualInstance.Name }}" value="{{ .Attributes.GetActualInstance.Value }}" {{ if
+            .Attributes.GetActualInstance.Pattern }} pattern="{{ .Attributes.GetActualInstance.Pattern }}" {{ end }} {{
+            if .Attributes.GetActualInstance.Required }} required {{ end }} {{ if .Attributes.GetActualInstance.Disabled
+            }} disabled {{ end }}
+            class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+          {{ end }}
+        </div>
+        {{ end }}
+
+        {{ if .Messages }}
+
+        {{ range .Messages }}
+        <div class="messages">
           {{ if eq .Type "info"}}
           <p class="">{{ .Text }}</p>
           {{ end }}
@@ -107,8 +103,8 @@
           <p class="text-green-500">{{ .Text }}</p>
           {{ end }}
         </div>
-          {{ end }}
-        
+        {{ end }}
+
         {{ end }}
         {{ end }}
 
@@ -119,10 +115,10 @@
             <a href="/recovery" class="font-semibold text-indigo-600 hover:text-indigo-500">Forgot password?</a>
           </div>
         </div> -->
-    
-    
+
+
       </form>
-   
+
 
       <!-- <div>
         <div class="relative mt-10">
