@@ -1,0 +1,79 @@
+{{ define "content" }}
+
+  
+  <!-- Display general messages if any -->
+{{ if .Messages }}
+<div class="messages">
+  {{ range .Messages }}
+    {{ if eq .Type "info"}}
+    <p class="">{{ .Text }}</p>
+    {{ end }}
+    {{ if eq .Type "error"}}
+    <p class="text-red-500">{{ .Text }}</p>
+    {{ end }}
+    {{ if eq .Type "success"}}
+    <p class="text-green-500">{{ .Text }}</p>
+    {{ end }}
+  {{ end }}
+</div>
+{{ end }}
+
+  <form method="{{ .Method}}" action="{{ .Action }}">
+    <!-- Render Fields Dynamically -->
+    {{ range .Fields }}
+      {{ if .Attributes.GetActualInstance }}
+        <div class="my-4">
+            <!-- Show label unless field is hidden or a submit button -->
+            {{ if not (or (eq .Attributes.GetActualInstance.Type "hidden") (eq .Attributes.GetActualInstance.Type "submit")) }}
+            <label for="{{ .Attributes.GetActualInstance.Name }}" class="block text-sm font-medium text-gray-700">
+            {{ .Meta.Label.Text }}
+            </label>
+            {{ end }}
+            
+
+            {{ if eq .Attributes.GetActualInstance.Type "submit" }}
+             <!-- Input Field -->
+             <button 
+             type="{{ .Attributes.GetActualInstance.Type }}" 
+             name="{{ .Attributes.GetActualInstance.Name }}"  
+             id="{{ .Attributes.GetActualInstance.Name }}"
+             value="{{ .Attributes.GetActualInstance.Value }}"
+             {{ if .Attributes.GetActualInstance.Pattern }} pattern="{{ .Attributes.GetActualInstance.Pattern }}" {{ end }}
+             {{ if .Attributes.GetActualInstance.Required }} required {{ end }}
+             {{ if .Attributes.GetActualInstance.Disabled }} disabled {{ end }}
+             class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+             >  {{.Meta.Label.Text}} </button>
+
+            {{ else }}
+            <!-- Input Field -->
+            <input 
+            type="{{ .Attributes.GetActualInstance.Type }}" 
+            name="{{ .Attributes.GetActualInstance.Name }}"  
+            id="{{ .Attributes.GetActualInstance.Name }}"
+            value="{{ .Attributes.GetActualInstance.Value }}"
+            {{ if .Attributes.GetActualInstance.Pattern }} pattern="{{ .Attributes.GetActualInstance.Pattern }}" {{ end }}
+            {{ if .Attributes.GetActualInstance.Required }} required {{ end }}
+            {{ if .Attributes.GetActualInstance.Disabled }} disabled {{ end }}
+            class="border mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md px-6 py-4"
+            >
+            {{ end }}
+        </div>
+      {{ end }}
+      {{ range .Messages }}
+      <p class="{{ .Type }}">{{ .Text }}</p>
+      {{ end }}
+    {{ end }}
+
+
+  </form>
+  <!-- Link to Registration -->
+  <p class="mt-4 text-sm">
+    Don't have an account? <a href="/registration" class="text-blue-600 hover:underline">Register here</a>
+  </p>
+
+  <!-- Link to Password Recovery -->
+  <p class="mt-2 text-sm">
+    Forgotten your password? <a data-cy="recovery" href="/recovery" class="text-blue-600 hover:underline">Recover it here</a>
+  </p>
+
+{{ end }}

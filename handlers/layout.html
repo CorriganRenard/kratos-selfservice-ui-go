@@ -1,0 +1,29 @@
+
+
+{{define "layout"}}
+<!doctype html>
+<html class="h-full bg-gray-50">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon support - see https://realfavicongenerator.net/ -->
+  <link rel="shortcut icon" href="{{ assetPath .fs "/static/images/favicon.ico" }}">
+  <meta name="theme-color" content="#ffffff">
+
+  <!-- See https://tailwindcss.com/ -->
+  <link href="{{ assetPath .fs "static/css/tailwind.css" }}" rel="stylesheet">
+
+
+
+
+</head>
+<body class="h-full">
+
+      {{template "content" . }}
+ 
+
+
+</body>
+</html>
+{{ end }}

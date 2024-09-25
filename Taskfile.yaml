@@ -1,0 +1,46 @@
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  default:
+    deps: [build]
+
+
+  docker-build:
+    cmds:
+      - docker build --no-cache -t cwrenard/kratos-selfservice-ui-go:v0.005 .
+
+
+  docker-push:
+    cmds:
+      - docker image push cwrenard/kratos-selfservice-ui-go:latest
+
+  clean:
+    cmds:
+      - rm -Rvf static   # rm -rf static
+      - mkdir -p static/images static/css
+    
+
+ 
+  ensure_tailwind:
+    cmds:
+      - if ! which tailwindcss > /dev/null; then echo You must install tailwindcss standalone executable 'https://tailwindcss.com/blog/standalone-cli'; exit 1; fi
+
+  gen_css:
+    cmds:
+      - task: ensure_tailwind # do not run in parallel
+      - tailwindcss -i ./static_src/css/tailwind-input.css -o ./static/css/tailwind.css
+     
+  autocss:
+    env: 
+      LOCAL_TARS: "yes"
+    cmds:
+      - while true; do task runloopcss; done
+
+  runloopcss:
+    deps: [gen_css]
+    cmds:
+      - echo "running gen_css" --watch=ui     
+
+ 
