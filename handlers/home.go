@@ -3,8 +3,8 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/benbjohnson/hashfs"
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/session"
+	"github.com/benbjohnson/hashfs"
 )
 
 // HomeParams configure the Home http handler

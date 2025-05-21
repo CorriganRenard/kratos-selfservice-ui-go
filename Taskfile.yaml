@@ -43,4 +43,35 @@ tasks:
     cmds:
       - echo "running gen_css" --watch=ui     
 
+  kill_port:
+    desc: Check for and kill processes using port 4477
+    cmds:
+      - |
+        PID=$(lsof -ti:4477 || true)
+        if [ -n "$PID" ]; then
+          echo "Killing process using port 4477 (PID: $PID)"
+          kill -9 $PID
+        else
+          echo "No process using port 4477"
+        fi
+
+  build:
+    desc: Build the application
+    deps: [gen_css]
+    cmds:
+      - go build -o kratos-selfservice-ui-go
+
+  run:
+    desc: Run the application
+    deps: [build, kill_port]
+    cmds:
+      - ./kratos-selfservice-ui-go -port 4477 -base-url http://localhost:4477/ -kratos-public-url http://localhost:4433/ -kratos-admin-url http://localhost:4434/ -kratos-browser-url http://localhost:4455/
+
+  dev:
+    desc: Run the application with auto-reload of CSS
+    cmds:
+      - task: gen_css
+      - task: build
+      - task: kill_port
+      - task: run
  
