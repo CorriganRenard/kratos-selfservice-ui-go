@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"html/template"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/api_client"
 	"github.com/benbjohnson/hashfs"
@@ -42,6 +44,36 @@ func (vp VerificationParams) VerifyEmail(w http.ResponseWriter, r *http.Request)
 
 	log.Printf("verification flow ui nodes: %#v", verificationFlow.Ui.Nodes)
 
+	// Create a buffer to execute nested templates
+	var cardContent template.HTML
+	cardTemplate := GetTemplate(verificationPage)
+	cardBuffer := &strings.Builder{}
+	err = cardTemplate.tmpl.ExecuteTemplate(cardBuffer, "card_content", map[string]interface{}{
+		"Method":   verificationFlow.Ui.Method,
+		"Action":   verificationFlow.Ui.Action,
+		"Fields":   verificationFlow.Ui.Nodes,
+		"Messages": verificationFlow.Ui.Messages,
+		"flow":     flow,
+	})
+	if err == nil {
+		cardContent = template.HTML(cardBuffer.String())
+	}
+
+	var pageContent template.HTML
+	pageTemplate := GetTemplate(verificationPage)
+	pageBuffer := &strings.Builder{}
+	err = pageTemplate.tmpl.ExecuteTemplate(pageBuffer, "page_content", map[string]interface{}{
+		"Method":      verificationFlow.Ui.Method,
+		"Action":      verificationFlow.Ui.Action,
+		"Fields":      verificationFlow.Ui.Nodes,
+		"Messages":    verificationFlow.Ui.Messages,
+		"flow":        flow,
+		"CardContent": cardContent,
+	})
+	if err == nil {
+		pageContent = template.HTML(pageBuffer.String())
+	}
+
 	dataMap := map[string]interface{}{
 		"Title":       "Email Verification",
 		"Method":      verificationFlow.Ui.Method,
@@ -51,6 +83,8 @@ func (vp VerificationParams) VerifyEmail(w http.ResponseWriter, r *http.Request)
 		"flow":        flow,
 		"fs":          vp.FS,
 		"pageHeading": "Verify Email",
+		"PageContent": pageContent,
+		"CardContent": cardContent,
 	}
 	if err = GetTemplate(verificationPage).Render("layout", w, r, dataMap); err != nil {
 		ErrorHandler(w, r, err)

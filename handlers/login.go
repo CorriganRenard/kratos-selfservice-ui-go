@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"html/template"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/api_client"
 	"github.com/benbjohnson/hashfs"
@@ -48,16 +50,47 @@ func (lp LoginParams) Login(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("login flow ui nodes: %#v", loginFlow.Ui.Nodes)
 
-	dataMap := map[string]interface{}{
-		"Title":    "Login",
+	// Create a buffer to execute nested templates
+	var cardContent template.HTML
+	cardTemplate := GetTemplate(loginPage)
+	cardBuffer := &strings.Builder{}
+	err = cardTemplate.tmpl.ExecuteTemplate(cardBuffer, "card_content", map[string]interface{}{
 		"Method":   loginFlow.Ui.Method,
 		"Action":   loginFlow.Ui.Action,
 		"Fields":   loginFlow.Ui.Nodes,
 		"Messages": loginFlow.Ui.Messages,
 		"flow":     flow,
-		//"config":      loginFlow.Ui.GetNodes(),
+	})
+	if err == nil {
+		cardContent = template.HTML(cardBuffer.String())
+	}
+
+	var pageContent template.HTML
+	pageTemplate := GetTemplate(loginPage)
+	pageBuffer := &strings.Builder{}
+	err = pageTemplate.tmpl.ExecuteTemplate(pageBuffer, "page_content", map[string]interface{}{
+		"Method":      loginFlow.Ui.Method,
+		"Action":      loginFlow.Ui.Action,
+		"Fields":      loginFlow.Ui.Nodes,
+		"Messages":    loginFlow.Ui.Messages,
+		"flow":        flow,
+		"CardContent": cardContent,
+	})
+	if err == nil {
+		pageContent = template.HTML(pageBuffer.String())
+	}
+
+	dataMap := map[string]interface{}{
+		"Title":       "Login",
+		"Method":      loginFlow.Ui.Method,
+		"Action":      loginFlow.Ui.Action,
+		"Fields":      loginFlow.Ui.Nodes,
+		"Messages":    loginFlow.Ui.Messages,
+		"flow":        flow,
 		"fs":          lp.FS,
 		"pageHeading": "Login",
+		"PageContent": pageContent,
+		"CardContent": cardContent,
 	}
 	if err = GetTemplate(loginPage).Render("layout", w, r, dataMap); err != nil {
 		ErrorHandler(w, r, err)

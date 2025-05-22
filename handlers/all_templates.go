@@ -25,6 +25,8 @@ var (
 	commonStimulusTemplate string
 	//go:embed page_heading.html
 	pageHeadingTemplate string
+	//go:embed form_components.html
+	formComponentsTemplate string
 
 	// Template per page
 	//
@@ -75,7 +77,7 @@ func init() {
 		stimulus  string           // Optional stimulus controller code
 	}
 	// All pages get the commonTemplates
-	commonTemplates := []string{layoutTemplate, navbarTemplate, commonStimulusTemplate, pageHeadingTemplate}
+	commonTemplates := []string{layoutTemplate, navbarTemplate, commonStimulusTemplate, pageHeadingTemplate, formComponentsTemplate}
 
 	// The templates and their associated functions to include etc
 	templates := []tmpl{
@@ -123,6 +125,23 @@ func globalFuncMap() template.FuncMap {
 				return path
 			}
 			return fmt.Sprintf("/%s", path)
+		},
+		"dict": func(values ...interface{}) (map[string]interface{}, error) {
+			if len(values)%2 != 0 {
+				return nil, fmt.Errorf("dict needs an even number of arguments")
+			}
+			dict := make(map[string]interface{}, len(values)/2)
+			for i := 0; i < len(values); i += 2 {
+				key, ok := values[i].(string)
+				if !ok {
+					return nil, fmt.Errorf("dict keys must be strings")
+				}
+				dict[key] = values[i+1]
+			}
+			return dict, nil
+		},
+		"print": func(text string) string {
+			return text
 		},
 	}
 }

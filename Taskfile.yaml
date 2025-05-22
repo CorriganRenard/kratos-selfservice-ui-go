@@ -9,7 +9,7 @@ tasks:
 
   docker-build:
     cmds:
-      - docker build --no-cache -t cwrenard/kratos-selfservice-ui-go:v0.005 .
+      - docker build --no-cache -t cwrenard/kratos-selfservice-ui-go:v0.028 .
 
 
   docker-push:
@@ -74,4 +74,54 @@ tasks:
       - task: build
       - task: kill_port
       - task: run
+ 
+  release:
+    desc: Increment version, build Docker image and push to registry
+    cmds:
+      - task: clean
+      - task: gen_css
+      - task: build
+      - |
+        # Extract current version from Taskfile
+        CURRENT_VERSION=$(grep -o 'cwrenard/kratos-selfservice-ui-go:v[0-9]\.[0-9][0-9][0-9]' Taskfile.yaml | head -1)
+        echo "Current version string: $CURRENT_VERSION"
+        
+        # Extract just the numeric part (0.001)
+        VERSION_NUM=$(echo "$CURRENT_VERSION" | grep -o '[0-9]\.[0-9][0-9][0-9]')
+        echo "Current version number: $VERSION_NUM"
+        
+        # Split into major and minor parts
+        MAJOR=$(echo "$VERSION_NUM" | cut -d'.' -f1)
+        MINOR=$(echo "$VERSION_NUM" | cut -d'.' -f2)
+        echo "Major: $MAJOR, Minor: $MINOR"
+        
+        # Convert minor to integer, forcing base 10 to handle leading zeros
+        # The "10#" prefix is necessary to treat numbers with leading zeros as decimal
+        MINOR_NUM=$(echo "$MINOR" | sed 's/^0*//')  # Remove leading zeros
+        if [ -z "$MINOR_NUM" ]; then
+          MINOR_NUM=0  # If it was all zeros, set to 0
+        fi
+        echo "Minor as number: $MINOR_NUM"
+        
+        # Increment minor version
+        NEW_MINOR_NUM=$((MINOR_NUM + 1))
+        echo "New minor number: $NEW_MINOR_NUM"
+        
+        # Format back to 3 digits with leading zeros
+        NEW_MINOR=$(printf "%03d" $NEW_MINOR_NUM)
+        NEW_VERSION="$MAJOR.$NEW_MINOR"
+        echo "New version: $NEW_VERSION"
+        
+        # Update version in Taskfile
+        sed -i.bak "s/cwrenard\/kratos-selfservice-ui-go:v[0-9]\.[0-9][0-9][0-9]/cwrenard\/kratos-selfservice-ui-go:v$NEW_VERSION/g" Taskfile.yaml
+        rm Taskfile.yaml.bak
+        
+        # Build Docker image with new version
+        docker build --no-cache -t cwrenard/kratos-selfservice-ui-go:v$NEW_VERSION -t cwrenard/kratos-selfservice-ui-go:latest .
+        
+        # Push Docker image to registry
+        docker push cwrenard/kratos-selfservice-ui-go:v$NEW_VERSION
+        docker push cwrenard/kratos-selfservice-ui-go:latest
+        
+        echo "Release v$NEW_VERSION completed successfully"
  

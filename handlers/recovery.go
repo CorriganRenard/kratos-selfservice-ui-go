@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"html/template"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/api_client"
 	"github.com/benbjohnson/hashfs"
@@ -47,30 +49,52 @@ func (rp RecoveryParams) Recovery(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dataMap := map[string]interface{}{
-		"Title":    "Recovery",
+	// Create a buffer to execute nested templates
+	var cardContent template.HTML
+	cardTemplate := GetTemplate(recoveryPage)
+	cardBuffer := &strings.Builder{}
+	err = cardTemplate.tmpl.ExecuteTemplate(cardBuffer, "card_content", map[string]interface{}{
 		"Method":   recoveryFlow.Ui.Method,
 		"Action":   recoveryFlow.Ui.Action,
 		"Fields":   recoveryFlow.Ui.Nodes,
 		"Messages": recoveryFlow.Ui.Messages,
 		"State":    recoveryFlow.State,
 		"flow":     flow,
-		//"config":      recoveryFlow.Ui.GetNodes(),
+	})
+	if err == nil {
+		cardContent = template.HTML(cardBuffer.String())
+	}
+
+	var pageContent template.HTML
+	pageTemplate := GetTemplate(recoveryPage)
+	pageBuffer := &strings.Builder{}
+	err = pageTemplate.tmpl.ExecuteTemplate(pageBuffer, "page_content", map[string]interface{}{
+		"Method":      recoveryFlow.Ui.Method,
+		"Action":      recoveryFlow.Ui.Action,
+		"Fields":      recoveryFlow.Ui.Nodes,
+		"Messages":    recoveryFlow.Ui.Messages,
+		"State":       recoveryFlow.State,
+		"flow":        flow,
+		"CardContent": cardContent,
+	})
+	if err == nil {
+		pageContent = template.HTML(pageBuffer.String())
+	}
+
+	dataMap := map[string]interface{}{
+		"Title":       "Recovery",
+		"Method":      recoveryFlow.Ui.Method,
+		"Action":      recoveryFlow.Ui.Action,
+		"Fields":      recoveryFlow.Ui.Nodes,
+		"Messages":    recoveryFlow.Ui.Messages,
+		"State":       recoveryFlow.State,
+		"flow":        flow,
 		"fs":          rp.FS,
 		"pageHeading": "Recovery",
+		"PageContent": pageContent,
+		"CardContent": cardContent,
 	}
 	if err = GetTemplate(recoveryPage).Render("layout", w, r, dataMap); err != nil {
 		ErrorHandler(w, r, err)
 	}
-	// log.Printf("Recovery state: %v", res.GetPayload().State)
-	// dataMap := map[string]interface{}{
-	// 	"flow":        flow,
-	// 	"link":        res.GetPayload().Methods["link"].Config,
-	// 	"state":       res.GetPayload().State,
-	// 	"fs":          rp.FS,
-	// 	"pageHeading": "Recover your account",
-	// }
-	// if err = GetTemplate(recoveryPage).Render("layout", w, r, dataMap); err != nil {
-	// 	ErrorHandler(w, r, err)
-	// }
 }

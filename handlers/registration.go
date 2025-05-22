@@ -2,9 +2,11 @@ package handlers
 
 import (
 	_ "embed"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/api_client"
 	"github.com/benbjohnson/hashfs"
@@ -51,21 +53,51 @@ func (rp RegistrationParams) Registration(w http.ResponseWriter, r *http.Request
 	b, err := io.ReadAll(rbody.Body)
 	if err != nil {
 		log.Printf("Error getting response body", err)
-
 	}
 	log.Printf("flow body: %s", string(b))
 
-	dataMap := map[string]interface{}{
-		"Title":    "Registration",
+	// Create a buffer to execute nested templates
+	var cardContent template.HTML
+	cardTemplate := GetTemplate(registrationPage)
+	cardBuffer := &strings.Builder{}
+	err = cardTemplate.tmpl.ExecuteTemplate(cardBuffer, "card_content", map[string]interface{}{
 		"Method":   registrationFlow.Ui.Method,
 		"Action":   registrationFlow.Ui.Action,
 		"Fields":   registrationFlow.Ui.Nodes,
 		"Messages": registrationFlow.Ui.Messages,
-		"State":    registrationFlow.State,
 		"flow":     flow,
-		//"config":      registrationFlow.Ui.GetNodes(),
+	})
+	if err == nil {
+		cardContent = template.HTML(cardBuffer.String())
+	}
+
+	var pageContent template.HTML
+	pageTemplate := GetTemplate(registrationPage)
+	pageBuffer := &strings.Builder{}
+	err = pageTemplate.tmpl.ExecuteTemplate(pageBuffer, "page_content", map[string]interface{}{
+		"Method":      registrationFlow.Ui.Method,
+		"Action":      registrationFlow.Ui.Action,
+		"Fields":      registrationFlow.Ui.Nodes,
+		"Messages":    registrationFlow.Ui.Messages,
+		"flow":        flow,
+		"CardContent": cardContent,
+	})
+	if err == nil {
+		pageContent = template.HTML(pageBuffer.String())
+	}
+
+	dataMap := map[string]interface{}{
+		"Title":       "Registration",
+		"Method":      registrationFlow.Ui.Method,
+		"Action":      registrationFlow.Ui.Action,
+		"Fields":      registrationFlow.Ui.Nodes,
+		"Messages":    registrationFlow.Ui.Messages,
+		"State":       registrationFlow.State,
+		"flow":        flow,
 		"fs":          rp.FS,
 		"pageHeading": "Registration",
+		"PageContent": pageContent,
+		"CardContent": cardContent,
 	}
 	if err = GetTemplate(registrationPage).Render("layout", w, r, dataMap); err != nil {
 		ErrorHandler(w, r, err)

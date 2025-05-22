@@ -1,0 +1,83 @@
+{{/* Common reusable components for forms and layout */}}
+
+{{/* Page container for centered content with title and description */}}
+{{ define "page_container" }}
+<div class="flex min-h-full w-full items-center justify-center">
+  <div class="w-full px-4 sm:px-6 md:px-8 py-12">
+    <div class="mx-auto max-w-[400px] space-y-6">
+      <div class="space-y-2 text-center">
+        <h1 class="text-3xl font-bold tracking-tight">{{ .Title }}</h1>
+        <p class="text-balance text-gray-500">{{ .Description }}</p>
+      </div>
+      
+      {{ .Content }}
+    </div>
+  </div>
+</div>
+{{ end }}
+
+{{/* Card component with white background, border and shadow */}}
+{{ define "card" }}
+<div class="overflow-hidden rounded-lg border-[0.5px] border-gray-200/60 bg-white text-gray-900 shadow-xl">
+  <div class="p-6">
+    {{ .Content }}
+  </div>
+</div>
+{{ end }}
+
+{{/* Form input with label and error message */}}
+{{ define "form_input" }}
+<div class="space-y-2">
+  <label 
+    for="{{ .Name }}" 
+    class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+  >
+    {{ .Label }}
+  </label>
+  <div class="relative">
+    <input 
+      type="{{ .Type }}" 
+      name="{{ .Name }}" 
+      id="{{ .Name }}" 
+      value="{{ .Value }}" 
+      {{ if .Pattern }} pattern="{{ .Pattern }}" {{ end }} 
+      {{ if .Required }} required {{ end }} 
+      {{ if .Disabled }} disabled {{ end }}
+      {{ if .Placeholder }} placeholder="{{ .Placeholder }}" {{ end }}
+      class="flex h-10 w-full rounded-md border-[0.5px] border-gray-200/80 bg-gray-50 px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+  </div>
+  {{ if .ErrorMessage }}
+    <p class="text-sm font-medium text-red-600 mt-2">{{ .ErrorMessage }}</p>
+  {{ end }}
+</div>
+{{ end }}
+
+{{/* Form button */}}
+{{ define "form_button" }}
+<button 
+  type="submit" 
+  name="{{ .Name }}" 
+  value="{{ .Value }}" 
+  class="inline-flex h-10 w-full items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+>
+  {{ .Label }}
+</button>
+{{ end }}
+
+{{/* Message box for info, error, or success messages */}}
+{{ define "message_box" }}
+<div class="{{ if eq .Type "info" }}relative rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-blue-900 shadow-sm{{ else if eq .Type "error" }}relative rounded-md bg-red-50 border border-red-200 px-4 py-3 text-red-900 shadow-sm{{ else if eq .Type "success" }}relative rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-900 shadow-sm{{ end }}">
+  <span class="block sm:inline">{{ .Text }}</span>
+</div>
+{{ end }}
+
+{{/* Footer link below card */}}
+{{ define "footer_link" }}
+<div class="text-center">
+  <p class="px-8 text-center text-sm text-gray-500">
+    {{ .Text }} 
+    <a href="{{ .Href }}" class="font-medium text-gray-900 underline-offset-4 hover:underline">{{ .LinkText }}</a>
+  </p>
+</div>
+{{ end }} 

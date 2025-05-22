@@ -2,6 +2,18 @@
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:300&display=swap);
 @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:300&display=swap');
 
+/* Custom shadcn-style components */
+.shadcn-card {
+  @apply rounded-lg border bg-white text-gray-800 shadow-lg;
+}
+
+.shadcn-input {
+  @apply flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+}
+
+.shadcn-button {
+  @apply inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-800 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+}
 
 /* width */
 ::-webkit-scrollbar {
