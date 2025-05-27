@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/api_client"
+	"github.com/CorriganRenard/kratos-selfservice-ui-go/options"
 	"github.com/benbjohnson/hashfs"
 )
 
@@ -19,6 +20,7 @@ type LoginParams struct {
 	// when the user wishes to login, and the 'flow' query param is missing
 	FlowRedirectURL string
 	CSRFCookieName  string
+	Options         *options.Options
 }
 
 // Login handler displays the login screen
@@ -91,6 +93,8 @@ func (lp LoginParams) Login(w http.ResponseWriter, r *http.Request) {
 		"pageHeading": "Login",
 		"PageContent": pageContent,
 		"CardContent": cardContent,
+		"siteName":    lp.Options.SiteName,
+		"faviconURL":  lp.Options.FaviconURL,
 	}
 	if err = GetTemplate(loginPage).Render("layout", w, r, dataMap); err != nil {
 		ErrorHandler(w, r, err)

@@ -35,10 +35,83 @@
 
 {{ define "card_content" }}
   {{ if eq .State "sent_email" }}
-    <div class="relative rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-900 shadow-sm text-center">
+    <div class="relative rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-900 shadow-sm mb-4">
       <p class="font-medium">Recovery email sent</p>
       <p class="text-sm mt-2">Please check your inbox for instructions to reset your password</p>
     </div>
+    
+    <form method="{{ .Method }}" action="{{ .Action }}" class="space-y-4">
+      <!-- Input Fields -->
+      {{ range .Fields }}
+        {{ if .Attributes.GetActualInstance }}
+          {{ if not (or (eq .Attributes.GetActualInstance.Type "hidden") (eq .Attributes.GetActualInstance.Type "submit")) }}
+            {{$label := .Attributes.GetActualInstance.Name}}
+            {{if .Meta}}
+              {{if .Meta.Label}}
+                {{if .Meta.Label.Text}}
+                  {{$label = .Meta.Label.Text}}
+                {{end}}
+              {{end}}
+            {{end}}
+
+            {{$placeholder := ""}}
+            {{if eq .Attributes.GetActualInstance.Name "email"}}
+              {{$placeholder = "Your email address"}}
+            {{end}}
+            {{if eq .Attributes.GetActualInstance.Name "code"}}
+              {{$placeholder = "Enter recovery code"}}
+            {{end}}
+
+            {{$errorMessage := ""}}
+            {{range .Messages}}
+              {{if eq .Type "error"}}
+                {{$errorMessage = .Text}}
+              {{end}}
+            {{end}}
+            
+            {{template "form_input" dict 
+              "Name" .Attributes.GetActualInstance.Name
+              "Type" .Attributes.GetActualInstance.Type
+              "Value" .Attributes.GetActualInstance.Value
+              "Pattern" .Attributes.GetActualInstance.Pattern
+              "Required" .Attributes.GetActualInstance.Required
+              "Disabled" .Attributes.GetActualInstance.Disabled
+              "Label" $label
+              "Placeholder" $placeholder
+              "ErrorMessage" $errorMessage
+            }}
+          {{ else if eq .Attributes.GetActualInstance.Type "hidden" }}
+            <input 
+              type="hidden" 
+              name="{{ .Attributes.GetActualInstance.Name }}" 
+              value="{{ .Attributes.GetActualInstance.Value }}"
+            >
+          {{ end }}
+        {{ end }}
+      {{ end }}
+
+      <!-- Submit Button -->
+      {{ range .Fields }}
+        {{ if .Attributes.GetActualInstance }}
+          {{ if eq .Attributes.GetActualInstance.Type "submit" }}
+            {{$label := "Submit"}}
+            {{if .Meta}}
+              {{if .Meta.Label}}
+                {{if .Meta.Label.Text}}
+                  {{$label = .Meta.Label.Text}}
+                {{end}}
+              {{end}}
+            {{end}}
+            
+            {{template "form_button" dict 
+              "Name" .Attributes.GetActualInstance.Name
+              "Value" .Attributes.GetActualInstance.Value
+              "Label" $label
+            }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    </form>
   {{ else }}
     <form method="{{ .Method }}" action="{{ .Action }}" class="space-y-4">
       <!-- Input Fields -->
@@ -57,6 +130,9 @@
             {{$placeholder := ""}}
             {{if eq .Attributes.GetActualInstance.Name "email"}}
               {{$placeholder = "Your email address"}}
+            {{end}}
+            {{if eq .Attributes.GetActualInstance.Name "code"}}
+              {{$placeholder = "Enter recovery code"}}
             {{end}}
 
             {{$errorMessage := ""}}

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/api_client"
+	"github.com/CorriganRenard/kratos-selfservice-ui-go/options"
 	"github.com/benbjohnson/hashfs"
 )
 
@@ -18,6 +19,7 @@ type LogoutParams struct {
 	// when the user wishes to logout, and the 'flow' query param is missing
 	FlowRedirectURL string
 	CSRFCookieName  string
+	Options         *options.Options
 }
 
 // Logout handler clears the session & logs the user out
@@ -55,6 +57,8 @@ func (lp LogoutParams) Logout(w http.ResponseWriter, r *http.Request) {
 	dataMap := map[string]interface{}{
 		"fs":          lp.FS,
 		"pageHeading": "Logged Out",
+		"siteName":    lp.Options.SiteName,
+		"faviconURL":  lp.Options.FaviconURL,
 	}
 	if err := GetTemplate(logoutPage).Render("layout", w, r, dataMap); err != nil {
 		ErrorHandler(w, r, err)

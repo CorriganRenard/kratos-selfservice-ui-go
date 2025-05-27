@@ -56,6 +56,12 @@ type Options struct {
 
 	// Pairs of authentication and encryption keys for Cookies
 	CookieStoreKeyPairs [][]byte
+
+	// SiteName is the name that appears in the browser tab title
+	SiteName string
+
+	// FaviconURL is the URL to the favicon image
+	FaviconURL string
 }
 
 func NewOptions() *Options {
@@ -65,6 +71,8 @@ func NewOptions() *Options {
 		KratosBrowserURL: &url.URL{},
 		BaseURL:          &url.URL{},
 		CSRFCookieName:   "Cookie",
+		SiteName:         "Kratos Selfservice UI",
+		FaviconURL:       "/static/images/favicon.svg",
 	}
 }
 
@@ -104,6 +112,18 @@ func (o *Options) SetFromCommandLine() *Options {
 	genCookieStoreKeys := false
 	flag.BoolVar(&genCookieStoreKeys, "gen-cookie-store-key-pair", false, "Pass this flag to generate a pairs of authentication and encryption keys and exit")
 
+	siteName := os.Getenv("SITE_NAME")
+	if siteName == "" {
+		siteName = "Kratos Selfservice UI"
+	}
+	flag.StringVar(&siteName, "site-name", siteName, "The name that appears in the browser tab title. Defaults to SITE_NAME envar")
+
+	faviconURL := os.Getenv("FAVICON_URL")
+	if faviconURL == "" {
+		faviconURL = "/static/images/favicon.svg"
+	}
+	flag.StringVar(&faviconURL, "favicon-url", faviconURL, "The URL to the favicon image. Defaults to FAVICON_URL envar")
+
 	flag.Parse()
 
 	if genCookieStoreKeys {
@@ -130,6 +150,8 @@ func (o *Options) SetFromCommandLine() *Options {
 		}
 		o.CookieStoreKeyPairs = append(o.CookieStoreKeyPairs, []byte(decoded))
 	}
+	o.SiteName = siteName
+	o.FaviconURL = faviconURL
 	return o
 }
 

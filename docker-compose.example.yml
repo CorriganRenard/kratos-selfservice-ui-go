@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  kratos-selfservice-ui:
+    build: .
+    ports:
+      - "4455:4455"
+    environment:
+      # Required Kratos configuration
+      KRATOS_PUBLIC_URL: "http://kratos:4433"
+      KRATOS_ADMIN_URL: "http://kratos:4434"
+      KRATOS_BROWSER_URL: "http://localhost:4433"
+      BASE_URL: "http://localhost:4455"
+      
+      # Cookie store configuration (generate with --gen-cookie-store-key-pair)
+      COOKIE_STORE_KEY_PAIRS: "your-auth-key your-encryption-key"
+      
+      # Site customization - NEW FEATURES
+      SITE_NAME: "My Custom Identity Portal"
+      FAVICON_URL: "https://example.com/my-custom-favicon.ico"
+      
+      # Optional port configuration
+      PORT: "4455"
+    depends_on:
+      - kratos
+
+  kratos:
+    image: oryd/kratos:v1.0.0
+    ports:
+      - "4433:4433"
+      - "4434:4434"
+    environment:
+      DSN: "sqlite:///var/lib/sqlite/db.sqlite?_fk=true"
+    volumes:
+      - ./kratos-config:/etc/config/kratos
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier 

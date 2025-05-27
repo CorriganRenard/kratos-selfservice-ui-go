@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/api_client"
+	"github.com/CorriganRenard/kratos-selfservice-ui-go/options"
 	"github.com/benbjohnson/hashfs"
 )
 
@@ -21,6 +22,7 @@ type RegistrationParams struct {
 	// when the user wishes to register, and the 'flow' query param is missing
 	FlowRedirectURL string
 	CSRFCookieName  string
+	Options         *options.Options
 }
 
 // Registration directs the user to a page where they can sign-up or
@@ -98,6 +100,8 @@ func (rp RegistrationParams) Registration(w http.ResponseWriter, r *http.Request
 		"pageHeading": "Registration",
 		"PageContent": pageContent,
 		"CardContent": cardContent,
+		"siteName":    rp.Options.SiteName,
+		"faviconURL":  rp.Options.FaviconURL,
 	}
 	if err = GetTemplate(registrationPage).Render("layout", w, r, dataMap); err != nil {
 		ErrorHandler(w, r, err)

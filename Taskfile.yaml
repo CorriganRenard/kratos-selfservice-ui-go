@@ -9,7 +9,8 @@ tasks:
 
   docker-build:
     cmds:
-      - docker build --no-cache -t cwrenard/kratos-selfservice-ui-go:v0.028 .
+      - docker buildx create --use || true
+      - docker buildx build --platform linux/amd64 --load -t cwrenard/kratos-selfservice-ui-go:v0.031 .
 
 
   docker-push:
@@ -116,8 +117,13 @@ tasks:
         sed -i.bak "s/cwrenard\/kratos-selfservice-ui-go:v[0-9]\.[0-9][0-9][0-9]/cwrenard\/kratos-selfservice-ui-go:v$NEW_VERSION/g" Taskfile.yaml
         rm Taskfile.yaml.bak
         
-        # Build Docker image with new version
-        docker build --no-cache -t cwrenard/kratos-selfservice-ui-go:v$NEW_VERSION -t cwrenard/kratos-selfservice-ui-go:latest .
+        # Create buildx builder if it doesn't exist
+        docker buildx create --use || true
+        
+        # Build Docker image with new version using buildx
+        docker buildx build --platform linux/amd64 --load \
+          -t cwrenard/kratos-selfservice-ui-go:v$NEW_VERSION \
+          -t cwrenard/kratos-selfservice-ui-go:latest .
         
         # Push Docker image to registry
         docker push cwrenard/kratos-selfservice-ui-go:v$NEW_VERSION

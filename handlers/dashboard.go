@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/CorriganRenard/kratos-selfservice-ui-go/options"
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/session"
 	"github.com/benbjohnson/hashfs"
 )
@@ -14,6 +15,7 @@ type DashboardParams struct {
 	FS *hashfs.FS
 
 	session.SessionStore
+	Options *options.Options
 }
 
 // Dashboard page is accessible to logged in users only, the proptection for that is provide by
@@ -25,6 +27,8 @@ func (p DashboardParams) Dashboard(w http.ResponseWriter, r *http.Request) {
 		"headers":     []string{},
 		"fs":          p.FS,
 		"pageHeading": "Dashboard",
+		"siteName":    p.Options.SiteName,
+		"faviconURL":  p.Options.FaviconURL,
 	}
 	if err := GetTemplate(dashboardPage).Render("layout", w, r, dataMap); err != nil {
 		ErrorHandler(w, r, err)

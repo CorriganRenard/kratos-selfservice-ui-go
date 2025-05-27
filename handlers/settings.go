@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/api_client"
+	"github.com/CorriganRenard/kratos-selfservice-ui-go/options"
 	"github.com/benbjohnson/hashfs"
 )
 
@@ -19,6 +20,7 @@ type SettingsParams struct {
 	FlowRedirectURL string
 
 	CSRFCookieName string
+	Options        *options.Options
 }
 
 // Settings handler displays the Settings screen that allows the user to change their details
@@ -53,6 +55,8 @@ func (lp SettingsParams) Settings(w http.ResponseWriter, r *http.Request) {
 		//"config":      settingsFlow.Ui.GetNodes(),
 		"fs":          lp.FS,
 		"pageHeading": "settings",
+		"siteName":    lp.Options.SiteName,
+		"faviconURL":  lp.Options.FaviconURL,
 	}
 	if err = GetTemplate(settingsPage).Render("layout", w, r, dataMap); err != nil {
 		ErrorHandler(w, r, err)

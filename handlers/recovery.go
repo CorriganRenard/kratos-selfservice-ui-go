@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/api_client"
+	"github.com/CorriganRenard/kratos-selfservice-ui-go/options"
 	"github.com/benbjohnson/hashfs"
 )
 
@@ -20,6 +21,7 @@ type RecoveryParams struct {
 	FlowRedirectURL string
 
 	CSRFCookieName string
+	Options        *options.Options
 }
 
 // Recovery handler displays the recovery screen, which allows the user to enter
@@ -93,6 +95,8 @@ func (rp RecoveryParams) Recovery(w http.ResponseWriter, r *http.Request) {
 		"pageHeading": "Recovery",
 		"PageContent": pageContent,
 		"CardContent": cardContent,
+		"siteName":    rp.Options.SiteName,
+		"faviconURL":  rp.Options.FaviconURL,
 	}
 	if err = GetTemplate(recoveryPage).Render("layout", w, r, dataMap); err != nil {
 		ErrorHandler(w, r, err)

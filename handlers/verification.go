@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/CorriganRenard/kratos-selfservice-ui-go/api_client"
+	"github.com/CorriganRenard/kratos-selfservice-ui-go/options"
 	"github.com/benbjohnson/hashfs"
 )
 
@@ -18,6 +19,7 @@ type VerificationParams struct {
 	// FlowRedirectURL is the Kratos URL to redirect the browser to when the flow query param is missing
 	FlowRedirectURL string
 	CSRFCookieName  string
+	Options         *options.Options
 }
 
 // VerifyEmail handler starts the email verification process
@@ -85,6 +87,8 @@ func (vp VerificationParams) VerifyEmail(w http.ResponseWriter, r *http.Request)
 		"pageHeading": "Verify Email",
 		"PageContent": pageContent,
 		"CardContent": cardContent,
+		"siteName":    vp.Options.SiteName,
+		"faviconURL":  vp.Options.FaviconURL,
 	}
 	if err = GetTemplate(verificationPage).Render("layout", w, r, dataMap); err != nil {
 		ErrorHandler(w, r, err)

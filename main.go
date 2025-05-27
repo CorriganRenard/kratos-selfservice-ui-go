@@ -65,18 +65,21 @@ func main() {
 	homeP := handlers.HomeParams{
 		SessionStore: session.SessionStore{Store: store},
 		FS:           fsys,
+		Options:      opt,
 	}
 	r.HandleFunc("/", homeP.Home)
 
 	regP := handlers.RegistrationParams{
 		FlowRedirectURL: opt.RegistrationURL(),
 		FS:              fsys,
+		Options:         opt,
 	}
 	r.HandleFunc("/registration", regP.Registration)
 
 	settingsP := handlers.SettingsParams{
 		FlowRedirectURL: opt.SettingsURL(),
 		FS:              fsys,
+		Options:         opt,
 	}
 	r.HandleFunc("/settings", settingsP.Settings)
 
@@ -84,6 +87,7 @@ func main() {
 		FlowRedirectURL: opt.LoginFlowURL(),
 		CSRFCookieName:  "",
 		FS:              fsys,
+		Options:         opt,
 	}
 	r.HandleFunc("/login", loginP.Login).Name("login")
 
@@ -91,6 +95,7 @@ func main() {
 		FlowRedirectURL: opt.VerificationFlowURL(),
 		CSRFCookieName:  "",
 		FS:              fsys,
+		Options:         opt,
 	}
 	r.HandleFunc("/verification", verificationP.VerifyEmail).Name("verification")
 
@@ -98,12 +103,14 @@ func main() {
 		FlowRedirectURL: opt.LogoutFlowURL(),
 		CSRFCookieName:  "",
 		FS:              fsys,
+		Options:         opt,
 	}
 	r.HandleFunc("/logout", logoutP.Logout)
 
 	recoverP := handlers.RecoveryParams{
 		FlowRedirectURL: opt.RecoveryFlowURL(),
 		FS:              fsys,
+		Options:         opt,
 	}
 	r.HandleFunc("/recovery", recoverP.Recovery)
 
@@ -120,6 +127,7 @@ func main() {
 	dashP := handlers.DashboardParams{
 		SessionStore: session.SessionStore{Store: store},
 		FS:           fsys,
+		Options:      opt,
 	}
 	r.Handle("/dashboard",
 		http.HandlerFunc(dashP.Dashboard),
