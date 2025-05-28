@@ -84,9 +84,9 @@
             
             <!-- Check if this is a resend button -->
             {{$isResendButton := false}}
-            {{if or (contains $label "resend") (contains $label "Resend") (contains $label "send") (contains $label "Send")}}
+            {{if or (eq $label "Resend code") (eq $label "Resend Code") (eq $label "Send code") (eq $label "Send Code") (eq $label "Resend") (eq $label "Send")}}
               {{$isResendButton = true}}
-            {{else if and .Attributes.GetActualInstance.Value (or (contains .Attributes.GetActualInstance.Value "code") (contains .Attributes.GetActualInstance.Value "link"))}}
+            {{else if and .Attributes.GetActualInstance.Value (or (eq .Attributes.GetActualInstance.Value "code") (eq .Attributes.GetActualInstance.Value "link"))}}
               {{$isResendButton = true}}
             {{end}}
             

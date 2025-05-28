@@ -10,7 +10,7 @@ tasks:
   docker-build:
     cmds:
       - docker buildx create --use || true
-      - docker buildx build --platform linux/amd64 --load -t cwrenard/kratos-selfservice-ui-go:v0.032 .
+      - docker buildx build --platform linux/amd64 --load -t cwrenard/kratos-selfservice-ui-go:v0.034 .
 
 
   docker-push:
