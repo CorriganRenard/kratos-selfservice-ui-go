@@ -82,10 +82,21 @@
               {{end}}
             {{end}}
             
+            <!-- Check if this is a resend button -->
+            {{$isResendButton := false}}
+            {{if or (contains $label "resend") (contains $label "Resend") (contains $label "send") (contains $label "Send")}}
+              {{$isResendButton = true}}
+            {{else if and .Attributes.GetActualInstance.Value (or (contains .Attributes.GetActualInstance.Value "code") (contains .Attributes.GetActualInstance.Value "link"))}}
+              {{$isResendButton = true}}
+            {{end}}
+            
             {{template "form_button" dict 
               "Name" .Attributes.GetActualInstance.Name
               "Value" .Attributes.GetActualInstance.Value
               "Label" $label
+              "Disabled" .Attributes.GetActualInstance.Disabled
+              "NoValidate" $isResendButton
+              "Secondary" $isResendButton
             }}
           {{ end }}
         {{ end }}
